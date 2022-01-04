@@ -9,6 +9,8 @@ app.use(cors());
 
 const users = [];
 
+
+/* ===== Middleware que checa se conta de usuário já existe ===== */
 function checksExistsUserAccount(request, response, next) {
   // Complete aqui
 }
