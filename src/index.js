@@ -10,13 +10,32 @@ app.use(cors());
 const users = [];
 
 
-/* ===== Middleware que checa se conta de usuário já existe ===== */
+/* ===== Middleware que checa se usuário já existe ===== */
 function checksExistsUserAccount(request, response, next) {
-  // Complete aqui
+  const { username } = request.headers;
+
+  const userExists = users.find(user => user.username === username);
+
+  if (!userExists) {
+    return response.status(404).json({ error: "User not found" });
+  }
+
+  request.user = userExists;
+
+  return next();
 }
 
 function checksCreateTodosUserAvailability(request, response, next) {
-  // Complete aqui
+  const { user } = request;// vindo de outro Middleware (checksExistsUserAccount)
+
+  // Checando se usuário pode criar um todo de acordo com seu plano
+  // Free: maximo de 10 todos
+  // Pro: unlimited
+  if (!user.pro && user.todos.length >= 10) {
+    return response.status(403).json({ error: "Can't create a todo, check your plan" });
+  }
+
+  return next();
 }
 
 function checksTodoExists(request, response, next) {
@@ -26,6 +45,9 @@ function checksTodoExists(request, response, next) {
 function findUserById(request, response, next) {
   // Complete aqui
 }
+
+
+/* ===== Rotas de CRUD ===== */
 
 app.post('/users', (request, response) => {
   const { name, username } = request.body;
