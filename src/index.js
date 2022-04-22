@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
-
-const { v4: uuidv4, validate } = require('uuid');
+const { v4: uuidv4 } = require('uuid');
+const { validate } = require('uuid');
 
 const app = express();
 app.use(express.json());
@@ -9,81 +9,77 @@ app.use(cors());
 
 const users = [];
 
+/* ===== MIDDLEWARES ===== */
 
-/* ===== Middleware que checa se usuário já existe ===== */
+// Middleware que checa se usuário já existe
 function checksExistsUserAccount(request, response, next) {
   const { username } = request.headers;
 
   const userExists = users.find(user => user.username === username);
 
-  if (!userExists) {
-    return response.status(404).json({ error: "User not found" });
-  }
+  if(!userExists) return response.status(404).json({ error: "User doesn't exists"})
 
   request.user = userExists;
 
   return next();
 }
 
+// Middleware checando se usuário pode criar um todo de acordo com seu plano
+// Free: maximo de 10 todos
+// Pro: unlimited
 function checksCreateTodosUserAvailability(request, response, next) {
-  const { user } = request;// vindo de outro Middleware (checksExistsUserAccount)
+  const { user } = request;
 
-  // Checando se usuário pode criar um todo de acordo com seu plano
-  // Free: maximo de 10 todos
-  // Pro: unlimited
-  if (!user.pro && user.todos.length >= 10) {
-    return response.status(403).json({ error: "Can't create a todo, check your plan" });
+  const userHasProPlan = user.pro;
+
+  const userFreeHasTenTodos = user.todos.length >= 10;
+
+  if(!userHasProPlan && userFreeHasTenTodos) {
+    return response.status(403).json({ error: "Limit reached, signing the Pro Plan"})
   }
 
   return next();
 }
 
 function checksTodoExists(request, response, next) {
-  const { username } = request.headers;// username
-  const { id } = request.params;// id do todo
+  const { username } = request.headers;
+  const { id } = request.params;
 
   // Verificando se usuário existe
-  const user = users.find(user => user.username === username);
-  if (!user) {
-    return response.status(404).json({ error: "User not found" });
-  }
+  const userExists = users.find(user => user.username === username);
+  if(!userExists) return response.status(404).json({ error: "User not found" });
 
   // Verificando se id é do tipo uuid
-  if (!validate(id)) {
-    return response.status(400).json({ error: "Id not validated" });
-  }
+  const isIdValided = validate(id);
+  if(!isIdValided) return response.status(400).json({ error: "Id not validated" });
 
   // Verificando se todo existe
-  const todo = user.todos.find(todo => todo.id === id);
-  if (!todo) {
-    return response.status(404).json({ error: "Todo not found" });
-  }
+  const todoExists = userExists.todos.find(todo => todo.id === id)
+  if(!todoExists) return response.status(404).json({ error: "Todo not found" });
 
-
-  request.user = user;
-  request.todo = todo;
+  request.user = userExists;
+  request.todo = todoExists;
 
   return next();
+
 }
 
 function findUserById(request, response, next) {
   const { id } = request.params;
 
-  const user = users.find(user => user.id === id);
+  const userExists = users.find(user => user.id === id);
 
-  // Verificando se usuário existe
-  if (!user) {
-    return response.status(404).json({ error: "User not found" });
-  }
+  if(!userExists) return response.status(404).json({ error: "User doesn't exists"});
 
-  request.user = user;
+  request.user = userExists;
 
   return next();
 }
 
 
-/* ===== Rotas de CRUD ===== */
+/* ===== ROTAS ===== */
 
+// Rotas de usuário
 app.post('/users', (request, response) => {
   const { name, username } = request.body;
 
@@ -124,6 +120,8 @@ app.patch('/users/:id/pro', findUserById, (request, response) => {
   return response.json(user);
 });
 
+
+// Rotas de todos
 app.get('/todos', checksExistsUserAccount, (request, response) => {
   const { user } = request;
 
@@ -151,8 +149,8 @@ app.put('/todos/:id', checksTodoExists, (request, response) => {
   const { title, deadline } = request.body;
   const { todo } = request;
 
-  todo.title = title;
-  todo.deadline = new Date(deadline);
+  todo.title = title ? title : todo.title;
+  todo.deadline = deadline ? new Date(deadline) : todo.deadline;
 
   return response.json(todo);
 });
