@@ -85,3 +85,17 @@
     - `username`(string): pelo headers da requisição
     - `id`(string): pela rota da requisição (id do todo)
 
+
+## ✍ Author
+<img alt="PabloXT14" title="PabloXT14" src="https://avatars.githubusercontent.com/u/71723595?s=400&u=f7a1ec0c2e1f7cd1acf79f61043dbc75b1079de6&v=4" width="100">
+<p>
+    Made with 💜 by PabloXT14
+</p>
+<p align="left">
+    <a href="https://www.linkedin.com/in/pabloalan/" target="_blank">
+        <img align="center" src="https://img.shields.io/badge/LinkedIn-%230077B5?style=for-the-badge&logo=linkedin&logoColor=white" alt="Linkedin Pablo Alan" />
+    </a>
+    <a href="mailto:pabloxt14@gmail.com" target="_blank">
+        <img align="center" src="https://img.shields.io/badge/Gmail-FF0000?style=for-the-badge&logo=gmail&logoColor=white" alt="Gmail Pablo Alan" />
+    </a>
+</p>
