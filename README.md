@@ -1,5 +1,5 @@
 # Projeto Trabalhando com Middlewares
-* Esta é uma aplicação NodeJS que simula a implementação de uma Todo List(lista de tarefas) na parte do Back-End, onde realiza-se o CRUD (Create, Read, Update, Delete) dos todos. No entanto o intuito principal foi .
+* Esta é uma aplicação NodeJS que simula a implementação de uma Todo List(lista de tarefas) na parte do Back-End, onde realiza-se o CRUD (Create, Read, Update, Delete) dos todos.
 
 * O objetivo principail foi treinar e aprimorar o manuseio de `Middlewares` dentro NodeJS com a Biblioteca Express.
 
